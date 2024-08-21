@@ -37,10 +37,11 @@ def run_mix():
     ManID = ManID_Spaces.lstrip()
 
     # obtaining the anonymity threshold value
-    anonymity_threshold_value = int(anonymity_threshold_entry.get())
-
-    if not anonymity_threshold_value:
-        messagebox.showerror("Error", "Please provide the anonymity threshold value.")
+    try:
+        anonymity_threshold_value = int(anonymity_threshold_entry.get())
+    except ValueError:
+        messagebox.showerror("ValueError", "Please provide the anonymity threshold value.")
+        return
 
     #error handling
     if not ExportUnits_file_path or not Response_file_path or not Participants_file_path or not Empl_Man_IDs_Columns:
@@ -62,9 +63,11 @@ def run_mix():
     # checking if column names exist in the Participant File
     if EmpID not in Participants:
         messagebox.showerror("KeyError", "Please check the Employee ID column provided.")
+        return
     
     if ManID not in Participants:
         messagebox.showerror("KeyError", "Please check the Manager ID column provided.")
+        return
 
     # obtaining the employee and manager IDs from the Participants file
     Participants_IDs = Participants[[EmpID, ManID, 'Respondent']]
