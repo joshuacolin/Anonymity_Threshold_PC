@@ -18,9 +18,11 @@ def run_mix():
     #Get Employee and Manager IDs
     Empl_Man_IDs  = Empl_Man_IDs_Columns.get().split(',')
 
-    #getting column Names
-    #columnNames = ['Unique Identifier', 'ManagerID']
-
+    # checking missing IDs column names
+    if len(Empl_Man_IDs) < 2:
+        messagebox.showerror("Missing Column Names", "Employee ID and Manager ID column names are required to perform the analysis.")
+        return
+    
     #Employee ID
     EmpID = Empl_Man_IDs[0]
 
@@ -36,6 +38,9 @@ def run_mix():
 
     # obtaining the anonymity threshold value
     anonymity_threshold_value = int(anonymity_threshold_entry.get())
+
+    if not anonymity_threshold_value:
+        messagebox.showerror("Error", "Please provide the anonymity threshold value.")
 
     #error handling
     if not ExportUnits_file_path or not Response_file_path or not Participants_file_path or not Empl_Man_IDs_Columns:
@@ -54,6 +59,13 @@ def run_mix():
 
 
     ############################ Participants File ################################################################
+    # checking if column names exist in the Participant File
+    if EmpID not in Participants:
+        messagebox.showerror("KeyError", "Please check the Employee ID column provided.")
+    
+    if ManID not in Participants:
+        messagebox.showerror("KeyError", "Please check the Manager ID column provided.")
+
     # obtaining the employee and manager IDs from the Participants file
     Participants_IDs = Participants[[EmpID, ManID, 'Respondent']]
     Participants_Metadata = Participants[['First Name', 'Last Name', 'Email', EmpID]]
