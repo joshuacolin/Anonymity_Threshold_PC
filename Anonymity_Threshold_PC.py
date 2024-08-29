@@ -79,7 +79,7 @@ def run_mix():
     #Participants_ManagerID_NotNull = Participants_NoNulls.fillna(0)
 
     # filtering non respondent participants
-    Participants_IDs_Filtered = Participants_NoNulls.loc[Participants_IDs['Respondent'] == 'true']
+    Participants_IDs_Filtered = Participants_NoNulls.loc[Participants_NoNulls['Respondent'] == 'true']
 
     # setting Employee ID and Manager ID to be strings
     Participants_InvitedCount = Participants_IDs_Filtered[[EmpID, ManID]].astype(str)
