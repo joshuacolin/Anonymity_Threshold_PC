@@ -6,10 +6,9 @@ import webbrowser
 from tkinter import filedialog,messagebox, ttk
 import os
 
-start_time = time.time()
-
 ########################################## Execute the script ##########################################
 def run_mix():
+    start_time = time.time()
     #Get file paths from user search
     ExportUnits_file_path = file_entry_data1.get()
     Response_file_path = file_entry_data2.get()
@@ -18,9 +17,11 @@ def run_mix():
     #Get Employee and Manager IDs
     Empl_Man_IDs  = Empl_Man_IDs_Columns.get().split(',')
 
-    #getting column Names
-    #columnNames = ['Unique Identifier', 'ManagerID']
-
+    # checking missing IDs column names
+    if len(Empl_Man_IDs) < 2:
+        messagebox.showerror("Missing Column Names", "Employee ID and Manager ID column names are required to perform the analysis.")
+        return
+    
     #Employee ID
     EmpID = Empl_Man_IDs[0]
 
@@ -35,7 +36,11 @@ def run_mix():
     ManID = ManID_Spaces.lstrip()
 
     # obtaining the anonymity threshold value
-    anonymity_threshold_value = int(anonymity_threshold_entry.get())
+    try:
+        anonymity_threshold_value = int(anonymity_threshold_entry.get())
+    except ValueError:
+        messagebox.showerror("ValueError", "Please provide the anonymity threshold value.")
+        return
 
     #error handling
     if not ExportUnits_file_path or not Response_file_path or not Participants_file_path or not Empl_Man_IDs_Columns:
@@ -54,6 +59,15 @@ def run_mix():
 
 
     ############################ Participants File ################################################################
+    # checking if column names exist in the Participant File
+    if EmpID not in Participants:
+        messagebox.showerror("KeyError", "Please check the Employee ID column provided.")
+        return
+    
+    if ManID not in Participants:
+        messagebox.showerror("KeyError", "Please check the Manager ID column provided.")
+        return
+
     # obtaining the employee and manager IDs from the Participants file
     Participants_IDs = Participants[[EmpID, ManID, 'Respondent']]
     Participants_Metadata = Participants[['First Name', 'Last Name', 'Email', EmpID]]
@@ -227,7 +241,7 @@ def run_mix():
     #Call Save_doc function
     save_status = save_doc()
     end_time = time.time()        
-    print("Execution time in seconds:", end_time-start_time)  
+    print("Execution time in seconds:", round(end_time-start_time,2), "seconds")  
     
     if save_status:
         messagebox.showerror("Success", "Doc was saved.")
@@ -253,58 +267,58 @@ def browse_files3():
     
 # Set up the main application window
 root = tk.Tk()
-root.title("Manager Anonymity Threshold Checkr")
+root.title("Parent-Child Manager Anonymity Threshold Checker v1")
 
 # File selection
 file_label_data1 = tk.Label(root, text="Export Unit Ids File path")
-file_label_data1.grid(row=0, column=0, padx=20, pady=20, sticky=tk.W)
+file_label_data1.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 file_entry_data1 = tk.Entry(root, width=30)
-file_entry_data1.grid(row=0, column=1, padx=20, pady=20)
+file_entry_data1.grid(row=0, column=1, padx=5, pady=5)
 browse_button_data1 = tk.Button(root, text="Browse",command=browse_files1)
-browse_button_data1.grid(row=0, column=2, padx=20, pady=20)
+browse_button_data1.grid(row=0, column=2, padx=5, pady=5)
 
 file_label_data2 = tk.Label(root, text="Response File path")
-file_label_data2.grid(row=1, column=0, padx=20, pady=20, sticky=tk.W)
+file_label_data2.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
 file_entry_data2 = tk.Entry(root, width=30)
-file_entry_data2.grid(row=1, column=1, padx=20, pady=20)
+file_entry_data2.grid(row=1, column=1, padx=5, pady=5)
 browse_button_data2 = tk.Button(root, text="Browse",command=browse_files2)
-browse_button_data2.grid(row=1, column=2, padx=20, pady=20)
+browse_button_data2.grid(row=1, column=2, padx=5, pady=5)
 
 file_label_data3 = tk.Label(root, text="Participant File path")
-file_label_data3.grid(row=2, column=0, padx=20, pady=20, sticky=tk.W)
+file_label_data3.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
 file_entry_data3 = tk.Entry(root, width=30)
-file_entry_data3.grid(row=2, column=1, padx=20, pady=20)
+file_entry_data3.grid(row=2, column=1, padx=5, pady=5)
 browse_button_data3 = tk.Button(root, text="Browse",command=browse_files3)
-browse_button_data3.grid(row=2, column=2, padx=20, pady=20)
+browse_button_data3.grid(row=2, column=2, padx=5, pady=5)
 
 # Level based column names input
 Empl_Man_IDs_Columns = tk.Label(root, text="Enter the names of the columns of Employee and Manager ID (comma-separated):")
-Empl_Man_IDs_Columns.grid(row=3, column=0, padx=20, pady=20, sticky=tk.W)
+Empl_Man_IDs_Columns.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
 Empl_Man_IDs_Columns = tk.Entry(root, width=30)
-Empl_Man_IDs_Columns.grid(row=3, column=1, padx=0, pady=20, columnspan=2)
+Empl_Man_IDs_Columns.grid(row=3, column=1, padx=5, pady=5, columnspan=2)
 
 #Set anonymity Threshold value
 anonymity_threshold_label = tk.Label(root, text="Set anonymity threshold value")
-anonymity_threshold_label.grid(row=4, column=0, padx=20, pady=20, sticky=tk.W)
+anonymity_threshold_label.grid(row=4, column=0, padx=5, pady=5, sticky=tk.W)
 anonymity_threshold_entry = tk.Entry(root, width=30)
-anonymity_threshold_entry.grid(row=4, column=1, padx=0, pady=20, columnspan=2)
+anonymity_threshold_entry.grid(row=4, column=1, padx=5, pady=5, columnspan=2)
 
 
 unsupported_chars_list_frame = tk.LabelFrame(root, text = "HOW TO USE:")
-unsupported_chars_list_frame.grid(row=5, column=0,columnspan=10, padx=20, pady=30, sticky=tk.W)
+unsupported_chars_list_frame.grid(row=5, column=0,columnspan=10, padx=20, pady=20, sticky=tk.W)
 
 unsupported_chars_list_1=tk.Label(unsupported_chars_list_frame, text='1.Select the files to perform the analysis. ')
-unsupported_chars_list_1.grid(row=1, column=1, padx=20, pady=20, sticky=tk.W)
+unsupported_chars_list_1.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 unsupported_chars_list_2=tk.Label(unsupported_chars_list_frame, text='2.Enter the name of the columns for Employee and Manager ID. ')
-unsupported_chars_list_2.grid(row=2, column=1, padx=20, pady=20, sticky=tk.W)
+unsupported_chars_list_2.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
 unsupported_chars_list_3=tk.Label(unsupported_chars_list_frame, text='3.Set the Anonymity Threshold value')
-unsupported_chars_list_3.grid(row=3, column=1, padx=20, pady=20, sticky=tk.W)
+unsupported_chars_list_3.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
 unsupported_chars_list_4=tk.Label(unsupported_chars_list_frame, text='4.Click "Get Anonymity Threshold!"')
-unsupported_chars_list_4.grid(row=4, column=1, padx=20, pady=20, sticky=tk.W)
+unsupported_chars_list_4.grid(row=4, column=1, padx=5, pady=5, sticky=tk.W)
 
 # Run mix button
 run_button = tk.Button(root, text="Get Anonymity Threshold!", command=run_mix)
-run_button.grid(row=6, column=0, columnspan=3, padx=20, pady=20)
+run_button.grid(row=6, column=0, columnspan=1, padx=20, pady=20)
 
 new=1
 url = "https://coda.io/d/QA-Automation_diYJsprOr4k/Managers-Anonymity-Threshold_suB1Q#_luXuW"
@@ -313,13 +327,7 @@ def openweb():
     webbrowser.open(url,new=new)
 
 feedback_button= tk.Button(root, text ="Feedback / New ideas", command=openweb)
-feedback_button.grid(row=5, column=1, columnspan=3, padx=20, pady=20)
+feedback_button.grid(row=6, column=1, columnspan=1, padx=5, pady=5)
 
 # Start the application
 root.mainloop()
-
-
-
-
-
-
